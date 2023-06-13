@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "webserver_assume" {
+data "aws_iam_policy_document" "app_server_assume" {
   version = "2012-10-17"
 
   statement {
@@ -11,21 +11,21 @@ data "aws_iam_policy_document" "webserver_assume" {
   }
 }
 
-resource "aws_iam_role" "webserver" {
-  name               = "${local.prefix}-webserver"
+resource "aws_iam_role" "app_server" {
+  name               = "${local.prefix}-app-server"
   description        = "Setup to allow the webserver to be connected to via SSM"
-  assume_role_policy = data.aws_iam_policy_document.webserver_assume.json
+  assume_role_policy = data.aws_iam_policy_document.app_server_assume.json
 
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
 
   tags = {
-    Name = "${local.prefix}-webserver"
+    Name = "${local.prefix}-app-server"
   }
 }
 
-resource "aws_iam_instance_profile" "webserver" {
-  name = "${local.prefix}-webserver"
-  role = aws_iam_role.webserver.name
+resource "aws_iam_instance_profile" "app_server" {
+  name = "${local.prefix}-app-server"
+  role = aws_iam_role.app_server.name
 }
