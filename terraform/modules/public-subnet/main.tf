@@ -12,12 +12,6 @@ resource "aws_route_table_association" "this" {
   subnet_id      = aws_subnet.this.id
 }
 
-resource "aws_route" "this" {
-  route_table_id         = var.route_table_id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = var.internet_gateway_id
-}
-
 resource "aws_eip" "this" {
   tags = {
     Name = "slade-lab-public-subnet-ip-${var.availability_zone}"
