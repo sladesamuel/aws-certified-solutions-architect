@@ -1,3 +1,8 @@
+variable "name" {
+  description = "The name of the Subnet"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "The Id of the VPC the Subnet is part of"
   type        = string

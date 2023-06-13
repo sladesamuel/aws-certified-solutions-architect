@@ -15,7 +15,9 @@ resource "aws_internet_gateway" "internet" {
   }
 }
 
-# Create a public and private Subnet in each Availability Zone
+#############################################################
+# Public Subnets
+#############################################################
 module "public_subnet_a" {
   source = "../subnet"
 
@@ -26,26 +28,29 @@ module "public_subnet_a" {
   is_public           = true
 }
 
-module "private_subnet_a" {
-  source = "../subnet"
-
-  vpc_id            = aws_vpc.network.id
-  cidr_block        = "10.0.2.0/23"
-  nat_gateway_id    = module.public_subnet_a.nat_gateway_id
-  availability_zone = "eu-west-2a"
-}
-
 module "public_subnet_b" {
   source = "../subnet"
 
   vpc_id              = aws_vpc.network.id
-  cidr_block          = "10.0.4.0/24"
+  cidr_block          = "10.0.2.0/24"
   internet_gateway_id = aws_internet_gateway.internet.id
   availability_zone   = "eu-west-2b"
   is_public           = true
 }
 
-module "private_subnet_b" {
+#############################################################
+# App Subnets
+#############################################################
+module "app_subnet_a" {
+  source = "../subnet"
+
+  vpc_id            = aws_vpc.network.id
+  cidr_block        = "10.0.3.0/23"
+  nat_gateway_id    = module.public_subnet_a.nat_gateway_id
+  availability_zone = "eu-west-2a"
+}
+
+module "app_subnet_b" {
   source = "../subnet"
 
   vpc_id            = aws_vpc.network.id
