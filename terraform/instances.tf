@@ -1,84 +1,65 @@
-# ####################################################################
-# # Public instance
-# ####################################################################
+resource "aws_security_group" "app_server" {
+  name   = "${local.prefix}-app-server-sg"
+  vpc_id = module.network.vpc_id
 
-# resource "aws_security_group" "webserver_firewall" {
-#   name        = "${local.prefix}-webserver-firewall"
-#   description = "Allow inbound HTTP access to the webserver"
-#   vpc_id      = aws_vpc.network.id
+  ingress {
+    description = "Allow inbound HTTP traffic"
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+  }
 
-#   ingress {
-#     description = "Allow inbound on port 80 (HTTP)"
-#     protocol    = "tcp"
-#     from_port   = 80
-#     to_port     = 80
-#     cidr_blocks = ["0.0.0.0/0"] # Allow access from anywhere
-#   }
+  egress {
+    description = "Allow all outbound traffic"
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+  }
 
-#   egress {
-#     description = "Allow all outbound traffic"
-#     protocol    = -1
-#     from_port   = 0
-#     to_port     = 0
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  tags = {
+    Name = "${local.prefix}-app-server-sg"
+  }
+}
 
-#   tags = {
-#     Name = "${local.prefix}-webserver-firewall"
-#   }
-# }
+resource "aws_launch_template" "app_server" {
+  name = "${local.prefix}-app-server-launch-template"
 
-# resource "aws_instance" "webserver" {
-#   ami                    = local.ec2_ami
-#   instance_type          = "t2.micro"
-#   iam_instance_profile   = aws_iam_instance_profile.webserver.name
-#   subnet_id              = aws_subnet.public.id
-#   vpc_security_group_ids = [aws_security_group.webserver_firewall.id]
-#   user_data              = file("${path.module}/data/ec2-public-instance.sh")
+  iam_instance_profile {
+    name = aws_iam_instance_profile.app_server.name
+  }
 
-#   tags = {
-#     Name = "${local.prefix}-webserver"
-#   }
-# }
+  image_id      = local.ec2_ami
+  instance_type = "t2.micro"
 
-# ####################################################################
-# # Private instance
-# ####################################################################
+  vpc_security_group_ids = [
+    aws_security_group.app_server.id
+  ]
 
-# resource "aws_security_group" "private_instance" {
-#   name        = "${local.prefix}-private-instance"
-#   description = "Allows incoming traffic to private instance from the webserver"
-#   vpc_id      = aws_vpc.network.id
+  tag_specifications {
+    resource_type = "instance"
 
-#   ingress {
-#     description     = "Allow inbound traffic from the webserver security group"
-#     security_groups = [aws_security_group.webserver_firewall.id]
-#     protocol        = "tcp"
-#     from_port       = 80
-#     to_port         = 80
-#   }
+    tags = {
+      Name = "${local.prefix}-app-server"
+    }
+  }
+}
 
-#   egress {
-#     description = "Allow all outbound traffic"
-#     protocol    = -1
-#     from_port   = 0
-#     to_port     = 0
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+resource "aws_autoscaling_group" "app_server" {
+  name = "${local.prefix}-app-server-asg"
 
-#   tags = {
-#     Name = "${local.prefix}-private-sg"
-#   }
-# }
+  desired_capacity = 4
+  min_size         = 2
+  max_size         = 8
 
-# resource "aws_instance" "private" {
-#   ami                    = local.ec2_ami
-#   instance_type          = "t2.micro"
-#   iam_instance_profile   = aws_iam_instance_profile.webserver.name
-#   subnet_id              = aws_subnet.private.id
-#   vpc_security_group_ids = [aws_security_group.private_instance.id]
+  launch_template {
+    id      = aws_launch_template.app_server.id
+    version = "$Latest"
+  }
 
-#   tags = {
-#     Name = "${local.prefix}-private-instance"
-#   }
-# }
+  vpc_zone_identifier = [
+    module.network.app_subnets.subnet_a,
+    module.network.app_subnets.subnet_b
+  ]
+}
