@@ -62,4 +62,6 @@ resource "aws_autoscaling_group" "app_server" {
     module.network.app_subnets.subnet_a,
     module.network.app_subnets.subnet_b
   ]
+
+  target_group_arns = [aws_lb_target_group.app_servers.arn]
 }
