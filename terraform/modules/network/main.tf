@@ -49,22 +49,30 @@ module "public_subnet_b" {
 #############################################################
 # App Subnets
 #############################################################
-module "app_subnet_a" {
-  source = "../subnet"
+resource "aws_route_table" "private" {
+  vpc_id = var.vpc_id
 
-  name              = "app"
+  tags = {
+    Name = "slade-lab-private-routes"
+  }
+}
+
+module "app_subnet_a" {
+  source = "../app-subnet"
+
   vpc_id            = aws_vpc.network.id
   cidr_block        = "10.0.4.0/23"
   nat_gateway_id    = module.public_subnet_a.nat_gateway_id
+  route_table_id    = aws_route_table.private.id
   availability_zone = "eu-west-2a"
 }
 
 module "app_subnet_b" {
-  source = "../subnet"
+  source = "../app-subnet"
 
-  name              = "app"
   vpc_id            = aws_vpc.network.id
   cidr_block        = "10.0.6.0/23"
   nat_gateway_id    = module.public_subnet_b.nat_gateway_id
+  route_table_id    = aws_route_table.private.id
   availability_zone = "eu-west-2b"
 }
