@@ -46,6 +46,7 @@ resource "aws_instance" "webserver" {
 ####################################################################
 
 resource "aws_security_group" "private_instance" {
+  name        = "${local.prefix}-private-instance"
   description = "Allows incoming traffic to private instance from the webserver"
   vpc_id      = aws_vpc.network.id
 
