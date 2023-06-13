@@ -29,11 +29,9 @@ resource "aws_lb" "app" {
   security_groups    = [aws_security_group.load_balancer.id]
 
   subnets = [
-    module.network.app_subnets.subnet_a,
-    module.network.app_subnets.subnet_b
+    module.network.public_subnets.subnet_a,
+    module.network.public_subnets.subnet_b
   ]
-
-
 
   tags = {
     Name = "${local.prefix}-alb"
