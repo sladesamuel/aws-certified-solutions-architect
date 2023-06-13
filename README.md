@@ -2,13 +2,9 @@
 
 Working toward building the Capstone architecture.
 
-**Target Architecture**
+**Architecture**
 
-![target](./images/target-architecture.png)
-
-**Current Architecture**
-
-![current](./images/current-architecture.png)
+![architecture](./images/architecture.png)
 
 ## Prerequisites
 
