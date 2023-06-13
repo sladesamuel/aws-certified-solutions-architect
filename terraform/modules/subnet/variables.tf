@@ -32,6 +32,6 @@ variable "availability_zone" {
 
 variable "is_public" {
   description = "Specifies whether this is a public (true) or private (false) Subnet"
-  type        = boolean
+  type        = bool
   default     = false
 }

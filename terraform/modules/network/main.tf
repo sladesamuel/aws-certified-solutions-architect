@@ -3,7 +3,7 @@ resource "aws_vpc" "network" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "${local.prefix}-network"
+    Name = "slade-lab-network"
   }
 }
 
@@ -11,7 +11,7 @@ resource "aws_internet_gateway" "internet" {
   vpc_id = aws_vpc.network.id
 
   tags = {
-    Name = "${local.prefix}-igw"
+    Name = "slade-lab-igw"
   }
 }
 
@@ -21,6 +21,7 @@ resource "aws_internet_gateway" "internet" {
 module "public_subnet_a" {
   source = "../subnet"
 
+  name                = "internet"
   vpc_id              = aws_vpc.network.id
   cidr_block          = "10.0.1.0/24"
   internet_gateway_id = aws_internet_gateway.internet.id
@@ -31,6 +32,7 @@ module "public_subnet_a" {
 module "public_subnet_b" {
   source = "../subnet"
 
+  name                = "internet"
   vpc_id              = aws_vpc.network.id
   cidr_block          = "10.0.2.0/24"
   internet_gateway_id = aws_internet_gateway.internet.id
@@ -44,8 +46,9 @@ module "public_subnet_b" {
 module "app_subnet_a" {
   source = "../subnet"
 
+  name              = "app"
   vpc_id            = aws_vpc.network.id
-  cidr_block        = "10.0.3.0/23"
+  cidr_block        = "10.0.4.0/23"
   nat_gateway_id    = module.public_subnet_a.nat_gateway_id
   availability_zone = "eu-west-2a"
 }
@@ -53,8 +56,9 @@ module "app_subnet_a" {
 module "app_subnet_b" {
   source = "../subnet"
 
+  name              = "app"
   vpc_id            = aws_vpc.network.id
-  cidr_block        = "10.0.5.0/23"
+  cidr_block        = "10.0.6.0/23"
   nat_gateway_id    = module.public_subnet_b.nat_gateway_id
   availability_zone = "eu-west-2b"
 }

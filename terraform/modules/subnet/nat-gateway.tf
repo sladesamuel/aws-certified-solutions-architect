@@ -12,7 +12,7 @@ resource "aws_nat_gateway" "this" {
   count = local.should_create_nat_gateway ? 1 : 0
 
   subnet_id     = aws_subnet.this.id
-  allocation_id = aws_eip.this.allocation_id
+  allocation_id = aws_eip.this[0].allocation_id
 
   tags = {
     Name = "${local.name_prefix}-ngw-${local.name_suffix}"

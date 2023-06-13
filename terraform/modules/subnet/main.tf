@@ -24,9 +24,9 @@ resource "aws_route" "public" {
 
   # This is a public route, routing traffic to the Internet Gateway
   # so it is only available when this Subnet is public
-  count = local.is_public ? 1 : 0
+  count = var.is_public ? 1 : 0
 
-  route_table_id         = aws_route_table.public.id
+  route_table_id         = aws_route_table.this.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = var.internet_gateway_id
 }
@@ -35,9 +35,9 @@ resource "aws_route" "private" {
 
   # This is a private route, routing traffic to the NAT Gateway
   # so it is only available when this Subnet is private
-  count = local.is_public ? 0 : 1
+  count = var.is_public ? 0 : 1
 
-  route_table_id         = aws_route_table.private.id
+  route_table_id         = aws_route_table.this.id
   destination_cidr_block = "0.0.0.0/0"
 
   # Don't use the NAT Gateway created by this module, as that will
