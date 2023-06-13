@@ -19,7 +19,7 @@ resource "aws_internet_gateway" "internet" {
 # Public Subnets
 #############################################################
 resource "aws_route_table" "public" {
-  vpc_id = var.vpc_id
+  vpc_id = aws_vpc.network.id
 
   tags = {
     Name = "slade-lab-public-routes"
@@ -50,7 +50,7 @@ module "public_subnet_b" {
 # App Subnets
 #############################################################
 resource "aws_route_table" "private" {
-  vpc_id = var.vpc_id
+  vpc_id = aws_vpc.network.id
 
   tags = {
     Name = "slade-lab-private-routes"
