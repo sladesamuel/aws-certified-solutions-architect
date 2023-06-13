@@ -17,8 +17,3 @@ variable "availability_zone" {
   description = "The name of the Availability Zone within the current Region in which to provision the subnet"
   type        = string
 }
-
-variable "route_table_id" {
-  description = "The Id of the Route Table to use for routing traffic from this Subnet to the Internet Gateway"
-  type        = string
-}
