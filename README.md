@@ -1,3 +1,11 @@
 # AWS Certified Solutions Architect
 
-Mini Terraform projects built up to help study for the AWS Certified Solutions Architect exams (Associate and Professional).
+Working toward building the Capstone architecture.
+
+**Target Architecture**
+
+![target](./images/target-architecture.png)
+
+**Current Architecture**
+
+![current](./images/current-architecture.png)
