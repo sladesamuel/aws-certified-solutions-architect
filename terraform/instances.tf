@@ -37,6 +37,8 @@ resource "aws_launch_template" "app_server" {
     aws_security_group.app_server.id
   ]
 
+  user_data = base64encode(file("${path.module}/data/app-server.sh"))
+
   tag_specifications {
     resource_type = "instance"
 
