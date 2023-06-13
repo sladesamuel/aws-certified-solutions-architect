@@ -1,3 +1,7 @@
+####################################################################
+# Public instance
+####################################################################
+
 resource "aws_security_group" "webserver_firewall" {
   name        = "${local.prefix}-webserver-firewall"
   description = "Allow inbound HTTP access to the webserver"
@@ -25,8 +29,7 @@ resource "aws_security_group" "webserver_firewall" {
 }
 
 resource "aws_instance" "webserver" {
-  # Amazon Linux 2023 AMI 2023.0.20230607.0 x86_64 HVM kernel-6.1
-  ami                    = "ami-02fb3e77af3bea031"
+  ami                    = local.ec2_ami
   instance_type          = "t2.micro"
   iam_instance_profile   = aws_iam_instance_profile.webserver.name
   subnet_id              = aws_subnet.public.id
@@ -35,5 +38,46 @@ resource "aws_instance" "webserver" {
 
   tags = {
     Name = "${local.prefix}-webserver"
+  }
+}
+
+####################################################################
+# Private instance
+####################################################################
+
+resource "aws_security_group" "private_instance" {
+  description = "Allows incoming traffic to private instance from the webserver"
+  vpc_id      = aws_vpc.network.id
+
+  ingress {
+    description     = "Allow inbound traffic from the webserver security group"
+    security_groups = [aws_security_group.webserver_firewall.id]
+    protocol        = "tcp"
+    from_port       = 80
+    to_port         = 80
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${local.prefix}-private-sg"
+  }
+}
+
+resource "aws_instance" "private" {
+  ami                    = local.ec2_ami
+  instance_type          = "t2.micro"
+  iam_instance_profile   = aws_iam_instance_profile.webserver.name
+  subnet_id              = aws_subnet.private.id
+  vpc_security_group_ids = [aws_security_group.private_instance.id]
+
+  tags = {
+    Name = "${local.prefix}-private-instance"
   }
 }
