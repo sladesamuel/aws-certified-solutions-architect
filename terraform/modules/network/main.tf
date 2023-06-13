@@ -18,26 +18,32 @@ resource "aws_internet_gateway" "internet" {
 #############################################################
 # Public Subnets
 #############################################################
-module "public_subnet_a" {
-  source = "../subnet"
+resource "aws_route_table" "public" {
+  vpc_id = var.vpc_id
 
-  name                = "internet"
+  tags = {
+    Name = "slade-lab-public-routes"
+  }
+}
+
+module "public_subnet_a" {
+  source = "../public-subnet"
+
   vpc_id              = aws_vpc.network.id
   cidr_block          = "10.0.1.0/24"
   internet_gateway_id = aws_internet_gateway.internet.id
+  route_table_id      = aws_route_table.public.id
   availability_zone   = "eu-west-2a"
-  is_public           = true
 }
 
 module "public_subnet_b" {
-  source = "../subnet"
+  source = "../public-subnet"
 
-  name                = "internet"
   vpc_id              = aws_vpc.network.id
   cidr_block          = "10.0.2.0/24"
   internet_gateway_id = aws_internet_gateway.internet.id
+  route_table_id      = aws_route_table.public.id
   availability_zone   = "eu-west-2b"
-  is_public           = true
 }
 
 #############################################################
