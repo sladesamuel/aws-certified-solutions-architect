@@ -20,6 +20,7 @@ resource "aws_rds_cluster" "db" {
   master_username      = "dbadmin"
   master_password      = "LabPassword"
   db_subnet_group_name = aws_db_subnet_group.db.name
+  skip_final_snapshot  = true
 
   tags = {
     Name = "${local.prefix}-rds-cluster"
