@@ -20,3 +20,12 @@ output "app_subnets" {
     subnet_b = module.app_subnet_b.subnet_id
   }
 }
+
+output "db_subnets" {
+  description = "The Ids of the private Subnets provisioned for the database instances"
+
+  value = {
+    subnet_a = module.app_subnet_a.subnet_id,
+    subnet_b = module.app_subnet_b.subnet_id
+  }
+}
