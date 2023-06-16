@@ -1,10 +1,10 @@
-# Simple Network
+# Transit Gateway
 
-Provisions a simple network with 2x public Subnets and 4x private Subnets (2 for application servers and 2 for database instances). Also sets up the applications servers within an Auto Scaling Group and a multi-AZ Aurora database.
+Provisions two VPCs within a single Region that are connected by a Transit Gateway. Each VPC contains 1 private Subnet with a single EC2 Instance. The Transit Gateway routes traffic along the private network to allow both VPCs to communicate with one another. A Client VPN is also set up within the account to allow local connectivity into the cloud-based private network. Both EC2 Instances are accessible via AWS Systems Manager Session Manager.
 
 **Architecture**
 
-![architecture](../images/architecture-simple-network.png)
+![architecture](../images/architecture-transit-gateway.png)
 
 ## Running the example
 
